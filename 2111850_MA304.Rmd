@@ -1,0 +1,110 @@
+---
+title: "2111850-Bidisha-Ghosh-MA304"
+author: "2111850-Bidisha-Ghosh"
+date: "28/04/2022"
+output: 
+   pdf_document:  default
+   html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = "False") ##this is to prevent printing the code in the "html" file.
+# Extend the list below to load all the packages required for your analyses here:
+#===============================================================================
+library(dplyr)
+library(ggplot2)
+library(plotly)
+
+##load the data.
+df<-read.csv("Data_viz.csv")
+#To see the first 5 rows of the dataset.
+head(df)
+#To know the class type of all the variables.
+str(df)
+#To check whether there is any null values in our dataset.
+sum(is.na(df))
+```
+```{r}
+#To see which division was more active in crime.
+table(df$DIVISION)
+#1
+#To represent the frequency of the particular divisions using bar plot.
+barplot(table(df$DIVISION))
+```
+As we can see from the above barplot that from the "CENTRAL" division, the cases were high.
+
+```{r cars}
+#2
+#Using boxplot to see which gender were working inforce for long period of time.
+boxplot(OFFICER_YEARS_ON_FORCE~OFFICER_GENDER, data = df)
+```
+As we can see from the above boxplot that the median number of years of "Male" gender is higher than female.
+
+```{r pressure, echo=FALSE}
+#3
+#To present if there is any relation with the Beat and Reprting Area.
+x = ggplot(df, aes(x = REPORTING_AREA, y =BEAT, )) + geom_count()
+ggplotly(x)
+```
+Beat is the area where police officer patrols. So within reprting area 5000 the frequencing of beat is high. It means that even if police patols are present, still the occurance of crime is still happening.
+```{r}
+#4
+#By using barplot we want to represent the comparison of injury between the two genders.
+#After seeing the table we have excluded null and unknown values.
+barplot(table(df$SUBJECT_INJURY, df$SUBJECT_GENDER, exclude = c("NULL", "Unknown")), xlab = "Gender", ylab = "Frequency")
+
+```
+Here the subject means the person who has done the crime.As we can see from the barplot male subjects injury is quite higher than the female subjects.It may be because they were more violent during the crime scenes.
+```{r}
+#5
+#To present the reason behind the subjects arrest.
+G <- data.frame(table(df$SUBJECT_WAS_ARRESTED, df$INCIDENT_REASON, exclude = "NULL"))
+ggplot(G) +
+  geom_bar(aes(x= Var2, y = Freq, fill = Var1), stat = 'identity') +
+  theme_grey()
+```
+As we can see from the plot, the reason "Arrest" is the most common amoung all others. Even crime related to "Service Call" were also quite high. It means that spam calls are more happening in these days.
+```{r}
+#6
+#To present which gender was arrested the most.
+a <- data.frame(table(df$SUBJECT_WAS_ARRESTED, df$SUBJECT_GENDER, exclude = c("Unknown", "NULL")))
+ggplot(a) +
+  geom_bar(aes(x= Var2, y = Freq, fill = Var1), stat = 'identity', position = 'dodge') +
+  theme_bw()
+```
+As we can see from the above plot, female subjects are far less arrested than their male counterparts.This again shows that Male domination in case of any crime reports.
+```{r}
+#7
+#To present which subject race has attacked police officers more.
+os <- data.frame(table(df$OFFICER_HOSPITALIZATION, df$SUBJECT_RACE, exclude = "NULL"))
+ggplot(os) +
+  geom_histogram(aes(x= Var2, y = Freq), stat = 'identity', position = 'dodge') +
+  facet_grid(Var1 ~.) +
+  theme_linedraw()
+```
+As we can see from the plot that only a small amount of Black and Hispanic subjects are more violent with officers.There is a positive point though,we always are biased to black people that they always cause problems and are more violent but here its interesting to see that the frequency of "NO" for black race is higher than others.
+```{r}
+#8
+#To prsent the types of description and their frequency.
+sd<-data.frame(table(df$SUBJECT_DESCRIPTION, exclude = "NULL"))
+ggplot(sd) +
+  geom_bar(aes(x= Freq, y = Var1), stat = 'identity', position = 'dodge') +
+  theme_classic()
+
+```
+As we can see from the plot, "Mentally Unstable" and "Alchohol" are the two most common reason of subjects character when investigated. But it is shocking to see that the amount of unarmed subjects were far less than other descriptions.
+```{r}
+#9
+#To see the number of years that the officers works in these type of field.
+library(htmlwidgets)
+of<-df %>% ggplot(aes(OFFICER_YEARS_ON_FORCE)) + geom_histogram()
+ggplotly(of)
+(Fig_hist = ggplotly(of))
+
+htmlwidgets::saveWidget(Fig_hist, "Fig_hist.html")
+```
+As we can see from the plot, after 10 years of working in the force, officers are reluctant to work for more number of years. Only three officers has worked for 36 years.
+```{r}
+
+```
+
